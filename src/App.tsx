@@ -53,7 +53,7 @@ function App() {
     }
   }
 
-  function onKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
+  function onKeyDown(e: KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       void onSubmit()
@@ -107,65 +107,76 @@ function App() {
   }
 
   return (
-    <div className="app">
-      <div className="card">
-        <div className="header">
-          <div className="title">Chat</div>
-          <div className="subtitle">Введите сообщение и отправьте на сервер</div>
-        </div>
+    <div className="page">
+      <div className="content">
+        <div className="hero">
+          <div className="appIcon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M12 3C7.03 3 3 6.58 3 11c0 2.39 1.18 4.54 3.07 6.02V21l3.1-1.72c.9.25 1.86.38 2.83.38 4.97 0 9-3.58 9-8s-4.03-8-9-8Z"
+                fill="rgba(255,255,255,0.92)"
+              />
+            </svg>
+          </div>
 
-        <div className="controls">
-          <textarea
-            className="input w-full"
-            rows={4}
+          <div className="kicker">Hi there!</div>
+          <div className="headline">What would you like to know?</div>
+          <div className="subhead">Use one of the most common prompts below</div>
+          <div className="subhead">or ask your own question</div>
+
+          {error && <div className="status error">{error}</div>}
+          {answer !== null && <div className="status ok">{answer}</div>}
+        </div>
+      </div>
+
+      <div className="composerWrap">
+        <div className="composer">
+          <button
+            type="button"
+            className={`micBtn ${!canUseSpeech ? 'disabled' : ''} ${isListening ? 'listening' : ''}`}
+            onClick={onToggleMic}
+            disabled={!canUseSpeech || isLoading}
+            aria-pressed={isListening}
+            aria-label="Voice input"
+            title={canUseSpeech ? (isListening ? 'Stop recording' : 'Voice input') : 'Web Speech API is not supported'}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3Z"
+                fill="rgba(255,255,255,0.70)"
+              />
+              <path
+                d="M19 11a1 1 0 1 0-2 0 5 5 0 0 1-10 0 1 1 0 1 0-2 0 7 7 0 0 0 6 6.92V20a1 1 0 1 0 2 0v-2.08A7 7 0 0 0 19 11Z"
+                fill="rgba(255,255,255,0.55)"
+              />
+            </svg>
+          </button>
+
+          <input
+            className="composerInput"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={onKeyDown}
-            placeholder="Напишите сообщение..."
+            placeholder="Ask whatever you want"
             disabled={isLoading}
+            autoComplete="off"
           />
 
-          <div className="actions">
-            <button
-              type="button"
-              className="btn secondary"
-              onClick={() => {
-                setInput('')
-                setAnswer(null)
-                setError(null)
-              }}
-              disabled={isLoading}
-            >
-              Очистить
-            </button>
-
-            <button
-              type="button"
-              className="btn"
-              onClick={() => void onSubmit()}
-              disabled={isLoading || input.trim().length === 0}
-            >
-              {isLoading ? 'Отправка…' : 'Отправить'}
-            </button>
-
-            <button
-              type="button"
-              className={`btn icon ${!canUseSpeech ? 'disabled' : ''} ${isListening ? 'listening' : ''}`}
-              onClick={onToggleMic}
-              disabled={!canUseSpeech || isLoading}
-              aria-pressed={isListening}
-              aria-label="Голосовой ввод"
-              title={canUseSpeech ? (isListening ? 'Остановить запись' : 'Голосовой ввод') : 'Web Speech API не поддерживается'}
-            >
-              <span className="mic">🎤</span>
-            </button>
-          </div>
-
-          {error && <div className="alert error">{error}</div>}
-          {answer !== null && <div className="alert ok">{answer}</div>}
+          <button
+            type="button"
+            className="sendBtn"
+            onClick={() => void onSubmit()}
+            disabled={isLoading || input.trim().length === 0}
+            aria-label="Send"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M8 5l8 7-8 7V5Z"
+                fill="rgba(255,255,255,0.92)"
+              />
+            </svg>
+          </button>
         </div>
-
-        <div className="hint">Enter — отправить, Shift+Enter — новая строка</div>
       </div>
     </div>
   )
